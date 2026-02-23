@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kalkulator Części Tuningowych</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Kalkulator Części Tuningowych</h1>
+        <p class="muted">Wybierz części, aby obliczyć całkowity koszt tuningu</p>
+
+        <div id="carPriceSection" class="section">
+            <label>Cena auta (dla części z procentami):</label>
+            <select id="carPriceRange">
+                <option value="10000">0-10k</option>
+                <option value="20000" selected>10k-30k</option>
+                <option value="50000">30k+</option>
+            </select>
+        </div>
+
+        <div id="partsContainer"></div>
+
+        <div class="section" style="margin-top: 20px;">
+            <label for="robocizna">Robocizna:</label>
+            <input type="number" id="robocizna" value="0" min="0" step="100" style="padding: 6px 12px; border: 1px solid #475569; border-radius: 6px; font-size: 0.95rem; width: 150px; background: #1e293b; color: #e2e8f0;">
+            <span style="margin-left: 5px; color: #94a3b8;">$</span>
+        </div>
+
+        <div class="totals">
+            <h2>Suma: $<span id="total">0.00</span></h2>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
