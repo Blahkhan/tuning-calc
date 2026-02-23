@@ -5,8 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Deutsche Style Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -14,8 +16,9 @@
         <!-- Header -->
         <header class="app-header">
             <div class="header-content">
-                <h1>Deutsche Style Studio</h1>
-                <p class="header-subtitle">Wruuuuum!</p>
+                <div class="logo-crop">
+                    <img class="brand-logo" src="logo.png" alt="Deutsche Style Studio">
+                </div>
             </div>
         </header>
 
@@ -28,12 +31,20 @@
 
             <!-- Right Column - Sidebar -->
             <aside class="sidebar">
-                <!-- Car Price Card -->
+                <!-- Vehicle + Tuner Card -->
                 <div class="card">
-                    <h3>Parametry Pojazdu</h3>
+                    <h3>Parametry Pojazdu i Dane Tunera</h3>
                     <div class="form-group">
                         <label for="carName">Nazwa auta:</label>
-                        <input type="text" id="carName" placeholder="np. Issi Sport" style="width: 100%; padding: 8px; border: 1px solid #444; border-radius: 4px; background: #2a2a2a; color: #e8e8e8; font-size: 0.9rem;">
+                        <input type="text" id="carName" class="text-input" placeholder="np. Issi Sport">
+                    </div>
+                    <div class="form-group">
+                        <label for="carUid">UID pojazdu:</label>
+                        <input type="text" id="carUid" class="text-input" placeholder="np. UID-23901">
+                    </div>
+                    <div class="form-group">
+                        <label for="licensePlate">Tablica rejestracyjna:</label>
+                        <input type="text" id="licensePlate" class="text-input" placeholder="np. LS 1234">
                     </div>
                     <div class="form-group">
                         <label for="carPrice">Wartość auta:</label>
@@ -41,6 +52,10 @@
                             <input type="number" id="carPrice" value="20000" min="0" step="1000">
                             <span class="currency">$</span>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tunerName">Imię i nazwisko:</label>
+                        <input type="text" id="tunerName" class="text-input" placeholder="np. Jan Kowalski">
                     </div>
                 </div>
 

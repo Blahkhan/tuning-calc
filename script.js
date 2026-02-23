@@ -75,6 +75,9 @@ const partsData = {
 
 const partsContainer = document.getElementById('partsContainer');
 const carNameInput = document.getElementById('carName');
+const carUidInput = document.getElementById('carUid');
+const licensePlateInput = document.getElementById('licensePlate');
+const tunerNameInput = document.getElementById('tunerName');
 const carPriceInput = document.getElementById('carPrice');
 const totalEl = document.getElementById('total');
 const robociznaInput = document.getElementById('robocizna');
@@ -91,17 +94,9 @@ function init() {
 
 function renderParts() {
     partsContainer.innerHTML = '';
-
-    // Cosmetic parts
     renderCategory('Części kosmetyczne', partsData.cosmetic);
-
-    // Body parts
     renderCategory('Części nadwozia', partsData.bodyParts);
-
-    // Wheels
     renderCategory('Felgi', partsData.wheels);
-
-    // Performance parts
     renderCategory('Części wydajnościowe', partsData.performance);
 }
 
@@ -252,12 +247,10 @@ function getPriceRange(carPrice) {
 }
 
 function updateTotals() {
-    // Update all prices based on car price range
     document.querySelectorAll('[id^="price-"]').forEach(priceEl => {
         const partName = priceEl.id.replace('price-', '');
         const checkbox = document.getElementById(`part-${partName}`);
 
-        // Find the part
         let foundPart = null;
         Object.values(partsData).forEach(category => {
             const part = category.find(p => p.name === partName);
@@ -285,17 +278,14 @@ function updateTotals() {
         }
     });
 
-    // Calculate parts total
     let partsCost = 0;
     selectedParts.forEach(({ price }) => {
         partsCost += price;
     });
 
-    // Get labor cost
     const laborCost = parseFloat(robociznaInput.value) || 0;
     const total = partsCost + laborCost;
 
-    // Update display
     partsCostEl.textContent = `$${formatPrice(partsCost)}`;
     laborCostEl.textContent = `$${formatPrice(laborCost)}`;
     totalEl.textContent = `$${formatPrice(total)}`;
@@ -305,273 +295,230 @@ function formatPrice(price) {
     return price.toFixed(2);
 }
 
+async function getLogoDataUrl() {
+    try {
+        const response = await fetch('logo.png', { cache: 'no-store' });
+        if (!response.ok) {
+            return null;
+        }
+        const blob = await response.blob();
+        return await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        return null;
+    }
+}
+
 // PDF Export Function
-function exportPDF() {
+async function exportPDF() {
+    const { jsPDF } = window.jspdf;
+
     const now = new Date();
     const dateStr = now.toLocaleDateString('pl-PL', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
+    const invoiceNo = `DSS-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
     const carName = carNameInput.value || 'Pojazd';
+    const carUid = carUidInput.value.trim() || 'Brak';
+    const licensePlate = licensePlateInput.value.trim() || 'Brak';
+    const tunerName = tunerNameInput.value.trim() || 'Brak';
+    const carPrice = parseFloat(carPriceInput.value) || 0;
+    const carValue = formatPrice(carPrice);
 
-    // Collect selected items
     const selectedItems = [];
     selectedParts.forEach(({ part, price, stage }) => {
         const stageName = stage !== null ? ` - ${part.stages[stage].name}` : '';
         selectedItems.push({
             name: part.name + stageName,
-            price: formatPrice(price)
+            price: price
         });
     });
 
-    const partsCost = selectedItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const partsCost = selectedItems.reduce((sum, item) => sum + item.price, 0);
     const laborCost = parseFloat(robociznaInput.value) || 0;
     const total = partsCost + laborCost;
 
-    // Create invoice HTML
-    const invoiceHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                * { box-sizing: border-box; }
-                body { 
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                    color: #2c3e50; 
-                    padding: 8px; 
-                    margin: 0; 
-                    width: 100%; 
-                    background: white;
-                }
-                .header { 
-                    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                    border-bottom: 4px solid #D4AF37;
-                    padding: 15px 12px;
-                    margin: -8px -8px 15px -8px;
-                    color: white;
-                }
-                .company-name { 
-                    font-size: 22px; 
-                    font-weight: 700; 
-                    color: white; 
-                    margin: 0 0 4px 0;
-                    letter-spacing: 0.5px;
-                }
-                .tagline { 
-                    font-size: 9px; 
-                    color: #c0c0c0;
-                    margin: 0;
-                    font-weight: 300;
-                    letter-spacing: 0.3px;
-                }
-                .invoice-section {
-                    margin-bottom: 14px;
-                }
-                .invoice-title { 
-                    font-size: 14px; 
-                    font-weight: 700; 
-                    color: #1a1a1a;
-                    margin: 0 0 8px 0;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-                .car-name { 
-                    font-size: 11px; 
-                    color: #D4AF37; 
-                    font-weight: 600;
-                    margin-bottom: 10px;
-                    background: #f8f8f8;
-                    padding: 6px 8px;
-                    border-left: 3px solid #D4AF37;
-                }
-                .info-section { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    margin-bottom: 14px; 
-                    font-size: 9.5px; 
-                    gap: 12px;
-                    background: #f9fafb;
-                    padding: 10px;
-                    border-radius: 4px;
-                    border: 1px solid #e8e8e8;
-                }
-                .info-col { 
-                    flex: 1; 
-                    line-height: 1.5;
-                }
-                .info-row {
-                    display: flex;
-                    gap: 4px;
-                    margin-bottom: 4px;
-                }
-                .info-label { 
-                    font-weight: 600; 
-                    color: #D4AF37;
-                    min-width: 70px;
-                }
-                .info-value { 
-                    color: #2c3e50;
-                }
-                table { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    margin-bottom: 12px; 
-                    table-layout: fixed;
-                    border: 1px solid #e0e0e0;
-                }
-                th { 
-                    background-color: #2c3e50;
-                    color: white; 
-                    padding: 8px 6px; 
-                    text-align: left; 
-                    font-size: 9.5px;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.3px;
-                }
-                th:last-child { text-align: right; }
-                td { 
-                    padding: 7px 6px; 
-                    border-bottom: 1px solid #e8e8e8;
-                    font-size: 9.5px; 
-                    word-wrap: break-word;
-                }
-                td:last-child { text-align: right; font-weight: 500; }
-                tbody tr { background: white; }
-                tbody tr:nth-child(even) { background-color: #f9fafb; }
-                tbody tr:hover { background-color: #f0f0f0; }
-                .total-section { 
-                    margin-top: 12px; 
-                    padding: 10px;
-                    border: 1px solid #e0e0e0;
-                    border-radius: 4px;
-                    background: #fafafa;
-                }
-                .total-row { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    margin-bottom: 6px; 
-                    font-size: 9.5px;
-                }
-                .total-label { 
-                    font-weight: 600;
-                    color: #2c3e50;
-                }
-                .total-value {
-                    color: #2c3e50;
-                }
-                .grand-total { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    font-size: 12px; 
-                    font-weight: 700;
-                    color: #1a1a1a;
-                    background: linear-gradient(135deg, #D4AF37 0%, #C5A028 100%);
-                    margin-top: 10px; 
-                    padding: 10px;
-                    border-radius: 4px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                .footer { 
-                    margin-top: 14px; 
-                    padding-top: 10px; 
-                    border-top: 1px solid #e0e0e0;
-                    font-size: 8px; 
-                    color: #7f8c8d; 
-                    text-align: center; 
-                    line-height: 1.5;
-                }
-                .footer-divider {
-                    height: 1px;
-                    background: #e0e0e0;
-                    margin: 8px 0;
-                }
-                p { margin: 0; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <p class="company-name">DEUTSCHE STYLE STUDIO</p>
-                <p class="tagline">Premium Car Customization Studio</p>
-            </div>
-            
-            <div class="invoice-section">
-                <div class="invoice-title">RACHUNEK</div>
-                <div class="car-name">Pojazd: ${carName}</div>
-            </div>
-            
-            <div class="info-section">
-                <div class="info-col">
-                    <div class="info-row">
-                        <span class="info-label">Data:</span>
-                        <span class="info-value">${dateStr}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Numer:</span>
-                        <span class="info-value">INV-${now.getTime().toString().slice(-6)}</span>
-                    </div>
-                </div>
-                <div class="info-col">
-                    <div class="info-row">
-                        <span class="info-label">Pojazd:</span>
-                        <span class="info-value">$${formatPrice(parseFloat(carPriceInput.value) || 0)}</span>
-                    </div>
-                </div>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Usługa / Część</th>
-                        <th style="width: 65px; text-align: right;">Cena (PLN)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${selectedItems.map(item => `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>$${item.price}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-            
-            <div class="total-section">
-                <div class="total-row">
-                    <span class="total-label">Razem części:</span>
-                    <span class="total-value">$${formatPrice(partsCost)}</span>
-                </div>
-                <div class="total-row">
-                    <span class="total-label">Robocizna:</span>
-                    <span class="total-value">$${formatPrice(laborCost)}</span>
-                </div>
-                <div class="grand-total">
-                    <span>RAZEM DO ZAPŁATY</span>
-                    <span>$${formatPrice(total)}</span>
-                </div>
-            </div>
-            
-            <div class="footer">
-                <p>Dziękujemy za wybranie Deutsche Style Studio!</p>
-                <p>Dla najlepszych efektów zapoznaj się z naszymi usługami</p>
-                <p style="margin-top: 6px; border-top: 1px solid #d0d0d0; padding-top: 6px;">Dokument wygenerowany automatycznie</p>
-            </div>
-        </body>
-        </html>
-    `;
-    
-    // Generate PDF using html2pdf
-    const element = document.createElement('div');
-    element.innerHTML = invoiceHTML;
-    
-    const opt = {
-        margin: [5, 5, 5, 5],
-        filename: `Deutsche-Style-Invoice-${dateStr}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, allowTaint: true },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }
-    };
-    
-    html2pdf().set(opt).from(element).save();
+    // Create PDF
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    // Colors
+    const gold = [212, 175, 55];
+    const dark = [17, 24, 39];
+    const gray = [107, 114, 128];
+    const lightGray = [229, 231, 235];
+
+    let y = 15;
+
+    // Load and add logo
+    try {
+        const logoDataUrl = await getLogoDataUrl();
+        if (logoDataUrl) {
+            doc.addImage(logoDataUrl, 'PNG', 15, y, 40, 15);
+        }
+    } catch (e) {
+        console.warn('Logo not loaded:', e);
+    }
+
+    // Header - Company name
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...dark);
+    doc.text('DEUTSCHE STYLE STUDIO', 15, y + 20);
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text('Premium Car Customization Studio', 15, y + 25);
+
+    // Invoice chip and info (right side)
+    doc.setFillColor(...dark);
+    doc.roundedRect(150, y, 45, 8, 2, 2, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(245, 233, 196);
+    doc.text('RACHUNEK', 172.5, y + 5.5, { align: 'center' });
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...dark);
+    doc.text(`Data: ${dateStr}`, 195, y + 12, { align: 'right' });
+    doc.text(`Numer: ${invoiceNo}`, 195, y + 17, { align: 'right' });
+
+    // Gold accent line
+    doc.setDrawColor(...gold);
+    doc.setLineWidth(1);
+    doc.line(15, y + 28, 195, y + 28);
+
+    y += 35;
+
+    // Vehicle banner
+    doc.setFillColor(255, 247, 230);
+    doc.rect(15, y, 180, 8, 'F');
+    doc.setDrawColor(...gold);
+    doc.setLineWidth(1);
+    doc.line(15, y, 15, y + 8);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(90, 69, 21);
+    doc.text(`Pojazd: ${carName}`, 18, y + 5.5);
+
+    y += 14;
+
+    // Info blocks
+    const blockWidth = 87;
+    const blockHeight = 22;
+
+    // Vehicle data block
+    doc.setDrawColor(...lightGray);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(15, y, blockWidth, blockHeight, 2, 2, 'S');
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...gray);
+    doc.text('DANE POJAZDU', 18, y + 5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...dark);
+    doc.setFontSize(9);
+    doc.text('Wartosc', 18, y + 11);
+    doc.text(`$${carValue}`, 18 + blockWidth - 6, y + 11, { align: 'right' });
+    doc.text('UID', 18, y + 16);
+    doc.text(carUid, 18 + blockWidth - 6, y + 16, { align: 'right' });
+    doc.text('Tablica', 18, y + 21);
+    doc.text(licensePlate, 18 + blockWidth - 6, y + 21, { align: 'right' });
+
+    // Tuner data block
+    doc.roundedRect(108, y, blockWidth, blockHeight, 2, 2, 'S');
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...gray);
+    doc.text('DANE TUNERA', 111, y + 5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...dark);
+    doc.setFontSize(9);
+    doc.text('Imie i nazwisko', 111, y + 11);
+    doc.text(tunerName, 111 + blockWidth - 6, y + 11, { align: 'right' });
+
+    y += blockHeight + 8;
+
+    // Parts table
+    const tableData = selectedItems.length ?
+        selectedItems.map(item => [item.name, `$${formatPrice(item.price)}`]) : [
+            [{ content: 'Brak wybranych usług', colSpan: 2, styles: { halign: 'center', textColor: gray } }]
+        ];
+
+    doc.autoTable({
+        startY: y,
+        head: [
+            ['Usluga / Czesc', 'Cena (PLN)']
+        ],
+        body: tableData,
+        theme: 'plain',
+        styles: {
+            fontSize: 9,
+            cellPadding: 3,
+            textColor: dark
+        },
+        headStyles: {
+            fillColor: dark,
+            textColor: [255, 255, 255],
+            fontSize: 8,
+            fontStyle: 'bold',
+            halign: 'left'
+        },
+        columnStyles: {
+            0: { cellWidth: 130 },
+            1: { cellWidth: 50, halign: 'right', fontStyle: 'bold' }
+        },
+        margin: { left: 15, right: 15 }
+    });
+
+    y = doc.lastAutoTable.finalY + 8;
+
+    // Totals section
+    doc.setDrawColor(...lightGray);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(15, y, 180, 26, 2, 2, 'S');
+    doc.setFillColor(252, 252, 252);
+    doc.roundedRect(15, y, 180, 26, 2, 2, 'F');
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...dark);
+    doc.text('Razem czesci', 18, y + 6);
+    doc.text(`$${formatPrice(partsCost)}`, 192, y + 6, { align: 'right' });
+
+    doc.text('Robocizna', 18, y + 12);
+    doc.text(`$${formatPrice(laborCost)}`, 192, y + 12, { align: 'right' });
+
+    // Grand total
+    doc.setFillColor(245, 233, 196);
+    doc.roundedRect(18, y + 16, 174, 8, 1.5, 1.5, 'F');
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('RAZEM DO ZAPLATY', 21, y + 21.5);
+    doc.text(`$${formatPrice(total)}`, 189, y + 21.5, { align: 'right' });
+
+    y += 32;
+
+    // Footer
+    doc.setDrawColor(...lightGray);
+    doc.setLineWidth(0.2);
+    doc.line(15, y, 195, y);
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text('Dziekujemy za wybranie Deutsche Style Studio!', 105, y + 5, { align: 'center' });
+    doc.text('Dokument wygenerowany automatycznie', 105, y + 9, { align: 'center' });
+
+    // Save
+    doc.save(`Deutsche-Style-Invoice-${dateStr}.pdf`);
 }
 
 // Initialize on load
