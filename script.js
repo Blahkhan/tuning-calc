@@ -13,18 +13,18 @@ const partsData = {
         { name: 'Hydraulika', price: 0, note: '??' }
     ],
     bodyParts: [
-        { name: 'Spoiler', price: 400, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Przód zderzak', price: 400, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Tył zderzak', price: 400, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Klatka', price: 400, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Maska', price: 400, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Dach', price: 400, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Progi', price: 200, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Błotnik lewy', price: 200, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Błotnik prawy', price: 200, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Wydech', price: 150, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Grill', price: 150, percentages: { low: 4, mid: 2, high: 2 } },
-        { name: 'Xenon', price: 150, percentages: { low: 4, mid: 2, high: 2 } }
+        { name: 'Spoiler', price: 400, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Przód zderzak', price: 400, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Tył zderzak', price: 400, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Klatka', price: 400, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Maska', price: 400, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Dach', price: 400, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Progi', price: 200, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Błotnik lewy', price: 200, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Błotnik prawy', price: 200, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Wydech', price: 150, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Grill', price: 150, percentages: { low: 0, mid: 4, high: 2 } },
+        { name: 'Xenon', price: 150, percentages: { low: 0, mid: 4, high: 2 } }
     ],
     wheels: [
         { name: 'Felgi - Lowrider', price: 400 },
@@ -33,41 +33,41 @@ const partsData = {
     performance: [{
             name: 'Silnik',
             stages: [
-                { name: 'stage 1', base: 1000, percentages: { low: 10, mid: 10, high: 5 } },
-                { name: 'stage 2', base: 1500, percentages: { low: 14, mid: 14, high: 6 } },
-                { name: 'stage 3', base: 2000, percentages: { low: 17, mid: 17, high: 8 } },
-                { name: 'stage 4', base: 3000, percentages: { low: 20, mid: 20, high: 10 } }
+                { name: 'stage 1', base: 1000, percentages: { low: 0, mid: 10, high: 5 } },
+                { name: 'stage 2', base: 1500, percentages: { low: 0, mid: 14, high: 6 } },
+                { name: 'stage 3', base: 2000, percentages: { low: 0, mid: 17, high: 8 } },
+                { name: 'stage 4', base: 3000, percentages: { low: 0, mid: 20, high: 10 } }
             ]
         },
         {
             name: 'Hamulce',
             stages: [
-                { name: 'stage 1', base: 500, percentages: { low: 6, mid: 6, high: 2 } },
-                { name: 'stage 2', base: 700, percentages: { low: 10, mid: 10, high: 3 } },
-                { name: 'stage 3', base: 900, percentages: { low: 13, mid: 13, high: 5 } }
+                { name: 'stage 1', base: 500, percentages: { low: 0, mid: 6, high: 2 } },
+                { name: 'stage 2', base: 700, percentages: { low: 0, mid: 10, high: 3 } },
+                { name: 'stage 3', base: 900, percentages: { low: 0, mid: 13, high: 5 } }
             ]
         },
         {
             name: 'Skrzynia',
             stages: [
-                { name: 'stage 1', base: 1000, percentages: { low: 10, mid: 10, high: 5 } },
-                { name: 'stage 2', base: 1500, percentages: { low: 14, mid: 14, high: 6 } },
-                { name: 'stage 3', base: 2000, percentages: { low: 17, mid: 17, high: 8 } }
+                { name: 'stage 1', base: 1000, percentages: { low: 0, mid: 10, high: 5 } },
+                { name: 'stage 2', base: 1500, percentages: { low: 0, mid: 14, high: 6 } },
+                { name: 'stage 3', base: 2000, percentages: { low: 0, mid: 17, high: 8 } }
             ]
         },
         {
             name: 'Zawieszenie',
             stages: [
-                { name: 'stage 1', base: 500, percentages: { low: 6, mid: 6, high: 2 } },
-                { name: 'stage 2', base: 700, percentages: { low: 10, mid: 10, high: 3 } },
-                { name: 'stage 3', base: 900, percentages: { low: 13, mid: 13, high: 5 } },
-                { name: 'stage 4', base: 1100, percentages: { low: 15, mid: 15, high: 6 } }
+                { name: 'stage 1', base: 500, percentages: { low: 0, mid: 6, high: 2 } },
+                { name: 'stage 2', base: 700, percentages: { low: 0, mid: 10, high: 3 } },
+                { name: 'stage 3', base: 900, percentages: { low: 0, mid: 13, high: 5 } },
+                { name: 'stage 4', base: 1100, percentages: { low: 0, mid: 15, high: 6 } }
             ]
         },
         {
             name: 'Turbo',
             stages: [
-                { name: 'stage 1', base: 1000, percentages: { low: 20, mid: 20, high: 10 } }
+                { name: 'stage 1', base: 1000, percentages: { low: 0, mid: 20, high: 10 } }
             ]
         }
     ]
