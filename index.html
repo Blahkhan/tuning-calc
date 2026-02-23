@@ -4,31 +4,77 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Kalkulator Części Tuningowych</title>
+    <title>Deutsche Style Studio</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Kalkulator Części Tuningowych</h1>
-        <p class="muted">Wybierz części, aby obliczyć całkowity koszt tuningu</p>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>Deutsche Style Studio</h1>
+                <p class="header-subtitle">Wruuuuum!</p>
+            </div>
+        </header>
 
-        <div id="carPriceSection" class="section">
-            <label for="carPrice">Cena auta:</label>
-            <input type="number" id="carPrice" value="20000" min="0" step="1000" style="padding: 6px 12px; border: 1px solid #475569; border-radius: 6px; font-size: 0.95rem; width: 150px; background: #1e293b; color: #e2e8f0;">
-            <span style="margin-left: 5px; color: #94a3b8;">$</span>
-        </div>
+        <!-- Main Layout -->
+        <div class="layout-wrapper">
+            <!-- Left Column - Parts -->
+            <main class="main-content">
+                <div id="partsContainer" class="parts-grid"></div>
+            </main>
 
-        <div id="partsContainer"></div>
+            <!-- Right Column - Sidebar -->
+            <aside class="sidebar">
+                <!-- Car Price Card -->
+                <div class="card">
+                    <h3>Parametry Pojazdu</h3>
+                    <div class="form-group">
+                        <label for="carName">Nazwa auta:</label>
+                        <input type="text" id="carName" placeholder="np. Issi Sport" style="width: 100%; padding: 8px; border: 1px solid #444; border-radius: 4px; background: #2a2a2a; color: #e8e8e8; font-size: 0.9rem;">
+                    </div>
+                    <div class="form-group">
+                        <label for="carPrice">Wartość auta:</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="carPrice" value="20000" min="0" step="1000">
+                            <span class="currency">$</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="section" style="margin-top: 20px;">
-            <label for="robocizna">Robocizna:</label>
-            <input type="number" id="robocizna" value="0" min="0" step="100" style="padding: 6px 12px; border: 1px solid #475569; border-radius: 6px; font-size: 0.95rem; width: 150px; background: #1e293b; color: #e2e8f0;">
-            <span style="margin-left: 5px; color: #94a3b8;">$</span>
-        </div>
+                <!-- Robocizna Card -->
+                <div class="card">
+                    <h3>Koszty Dodatkowe</h3>
+                    <div class="form-group">
+                        <label for="robocizna">Robocizna:</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="robocizna" value="0" min="0" step="100">
+                            <span class="currency">$</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="totals">
-            <h2>Suma: $<span id="total">0.00</span></h2>
+                <!-- Summary Card -->
+                <div class="card summary">
+                    <h3>Podsumowanie</h3>
+                    <div class="summary-item">
+                        <span>Części:</span>
+                        <span id="partsCost">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Robocizna:</span>
+                        <span id="laborCost">$0.00</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-total">
+                        <span>Razem:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                    <button id="exportPdfBtn" class="btn-export-pdf">📄 Eksportuj PDF</button>
+                </div>
+            </aside>
         </div>
     </div>
 
