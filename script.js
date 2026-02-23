@@ -74,7 +74,7 @@ const partsData = {
 };
 
 const partsContainer = document.getElementById('partsContainer');
-const carPriceRange = document.getElementById('carPriceRange');
+const carPriceInput = document.getElementById('carPrice');
 const totalEl = document.getElementById('total');
 const robociznaInput = document.getElementById('robocizna');
 
@@ -82,7 +82,7 @@ let selectedParts = new Map();
 
 function init() {
     renderParts();
-    carPriceRange.addEventListener('change', updateTotals);
+    carPriceInput.addEventListener('input', updateTotals);
     robociznaInput.addEventListener('input', updateTotals);
 }
 
@@ -222,7 +222,7 @@ function renderPartWithStages(part) {
 function calculatePartPrice(part) {
     if (part.price !== undefined) {
         if (part.percentages) {
-            const carPrice = parseInt(carPriceRange.value);
+            const carPrice = parseFloat(carPriceInput.value) || 0;
             const range = getPriceRange(carPrice);
             const percentage = part.percentages[range];
             return part.price + (carPrice * percentage / 100);
@@ -234,7 +234,7 @@ function calculatePartPrice(part) {
 
 function calculateStagePrice(stage) {
     if (stage.percentages) {
-        const carPrice = parseInt(carPriceRange.value);
+        const carPrice = parseFloat(carPriceInput.value) || 0;
         const range = getPriceRange(carPrice);
         const percentage = stage.percentages[range];
         return stage.base + (carPrice * percentage / 100);

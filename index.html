@@ -14,12 +14,9 @@
         <p class="muted">Wybierz części, aby obliczyć całkowity koszt tuningu</p>
 
         <div id="carPriceSection" class="section">
-            <label>Cena auta (dla części z procentami):</label>
-            <select id="carPriceRange">
-                <option value="10000" selected>0-10k</option>
-                <option value="20000">10k-30k</option>
-                <option value="50000">30k+</option>
-            </select>
+            <label for="carPrice">Cena auta:</label>
+            <input type="number" id="carPrice" value="20000" min="0" step="1000" style="padding: 6px 12px; border: 1px solid #475569; border-radius: 6px; font-size: 0.95rem; width: 150px; background: #1e293b; color: #e2e8f0;">
+            <span style="margin-left: 5px; color: #94a3b8;">$</span>
         </div>
 
         <div id="partsContainer"></div>
